@@ -2,6 +2,7 @@ package com.cliff.trellzo.controllers;
 
 import com.cliff.trellzo.entity.Task;
 import com.cliff.trellzo.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
+    private ResponseEntity<Task> updateTask(@Valid @PathVariable Long id, @RequestBody Task task) {
         return ResponseEntity.ok(taskService.updateTask(id,task));
     }
 
