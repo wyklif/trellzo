@@ -1,11 +1,8 @@
 package com.cliff.trellzo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,10 +15,22 @@ public class Task {
     private Long id;
     @NotBlank(message = "Title is mandatory")
     private String title;
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email field must be a valid email")
-    private String email;
     private String description;
     private String status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @NotNull(message = "The User ID Field is required")
+    private User user;
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", user=" + user +
+                '}';
+    }
 }

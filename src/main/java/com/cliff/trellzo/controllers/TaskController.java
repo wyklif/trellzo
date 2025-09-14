@@ -1,6 +1,7 @@
 package com.cliff.trellzo.controllers;
 
-import com.cliff.trellzo.entity.Task;
+import com.cliff.trellzo.dto.requests.TaskRequestDTO;
+import com.cliff.trellzo.dto.responses.TaskResponseDTO;
 import com.cliff.trellzo.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,27 +20,27 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> findAll(){
+    public List<TaskResponseDTO> findAll(){
         return taskService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> findById(@PathVariable Long id){
+    public ResponseEntity<TaskResponseDTO> findById(@PathVariable Long id){
         return taskService.findById(id).map(task -> ResponseEntity.ok().body(task)).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    private Task createTask(@RequestBody Task task) {
-        return taskService.saveTask(task);
+    public TaskResponseDTO createTask(@Valid @RequestBody TaskRequestDTO taskRequestDto) {
+        return taskService.saveTask(taskRequestDto);
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<Task> updateTask(@Valid @PathVariable Long id, @RequestBody Task task) {
-        return ResponseEntity.ok(taskService.updateTask(id,task));
+    public ResponseEntity<TaskResponseDTO> updateTask(@Valid @PathVariable Long id, @RequestBody TaskRequestDTO taskRequestDto) {
+        return ResponseEntity.ok(taskService.updateTask(id, taskRequestDto));
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
          taskService.deleteTaskById(id);
          return ResponseEntity.noContent().build();
     }
