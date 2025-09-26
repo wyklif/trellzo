@@ -1,12 +1,16 @@
 package com.cliff.trellzo.service;
 
+import com.cliff.trellzo.config.RabbitMqConfig;
+import com.cliff.trellzo.dto.email.EmailQueueDto;
 import com.cliff.trellzo.dto.requests.UserRequestDTO;
 import com.cliff.trellzo.dto.responses.TaskResponseDTO;
 import com.cliff.trellzo.dto.responses.UserResponseDTO;
 import com.cliff.trellzo.entity.User;
 import com.cliff.trellzo.repository.UserRepository;
+import com.cliff.trellzo.utils.EmailUtils;
 import com.cliff.trellzo.utils.TaskUtils;
 import com.cliff.trellzo.utils.UserUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,9 +20,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final RabbitTemplate rabbitTemplate;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RabbitTemplate rabbitTemplate) {
         this.userRepository = userRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public List<UserResponseDTO> findAllUsers() {
@@ -52,6 +58,12 @@ public class UserService {
         User user = UserUtils.createUserFromDTO(userRequestDTO);
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         User saved =  userRepository.save(user);
+        // publish the mail in the email queue
+        String email = userRequestDTO.getEmail();
+
+        String payload = EmailUtils.getActivationHtml(user.getVerificationCode());
+
+        rabbitTemplate.convertAndSend(RabbitMqConfig.TRELLZO_EXCHANGE,RabbitMqConfig.EMAIL_ROUTING_KEY,new EmailQueueDto(email,"Activate your account",payload));
         userResponseDTO.setId(saved.getId());
         userResponseDTO.setEmail(saved.getEmail());
         userResponseDTO.setFirstName(saved.getFirstName());

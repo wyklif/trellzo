@@ -30,7 +30,7 @@ public class UserController {
         return userService.findUserById(id).map(u -> ResponseEntity.ok().body(u)).orElse(ResponseEntity.notFound().build());
     }
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO){
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userRequestDTO){
         return ResponseEntity.ok().body(userService.saveUser(userRequestDTO));
     }
     @PutMapping
@@ -43,4 +43,5 @@ public class UserController {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
+
 }

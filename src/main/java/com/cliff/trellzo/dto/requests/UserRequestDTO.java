@@ -19,6 +19,8 @@ public class UserRequestDTO {
     @NotEmpty(message = "Email is required")
     @Email
     private String email;
+    @NotEmpty
+    private String password;
 
     @Override
     public String toString() {
