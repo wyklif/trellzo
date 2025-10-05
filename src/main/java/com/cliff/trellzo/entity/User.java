@@ -22,6 +22,8 @@ public class User {
     private String firstName;
     @NotBlank(message = "Last Name is required")
     private String lastName;
+    @Column(name = "user_name")
+    private String username;
     @Column(unique = true, nullable = false)
     @NotBlank(message = "Email is required")
     @Email

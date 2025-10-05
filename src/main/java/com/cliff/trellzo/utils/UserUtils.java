@@ -17,6 +17,7 @@ public class UserUtils {
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
         user.setEmail(userRequestDTO.getEmail());
+        user.setUsername(userRequestDTO.getEmail());
         return user;
     }
 
