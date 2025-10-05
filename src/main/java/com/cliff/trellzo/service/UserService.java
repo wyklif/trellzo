@@ -21,10 +21,12 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final RabbitTemplate rabbitTemplate;
+    private final UserUtils userUtils;
 
-    public UserService(UserRepository userRepository, RabbitTemplate rabbitTemplate) {
+    public UserService(UserRepository userRepository, RabbitTemplate rabbitTemplate, UserUtils userUtils) {
         this.userRepository = userRepository;
         this.rabbitTemplate = rabbitTemplate;
+        this.userUtils = userUtils;
     }
 
     public List<UserResponseDTO> findAllUsers() {
@@ -55,7 +57,7 @@ public class UserService {
     }
 
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO){
-        User user = UserUtils.createUserFromDTO(userRequestDTO);
+        User user = userUtils.createUserFromDTO(userRequestDTO);
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         User saved =  userRepository.save(user);
         // publish the mail in the email queue

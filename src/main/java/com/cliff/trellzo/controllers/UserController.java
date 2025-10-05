@@ -29,7 +29,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long id) {
         return userService.findUserById(id).map(u -> ResponseEntity.ok().body(u)).orElse(ResponseEntity.notFound().build());
     }
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userRequestDTO){
         return ResponseEntity.ok().body(userService.saveUser(userRequestDTO));
     }
