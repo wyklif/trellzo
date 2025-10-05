@@ -1,5 +1,6 @@
 package com.cliff.trellzo.controllers;
 
+import com.cliff.trellzo.dto.requests.LoginRequestDTO;
 import com.cliff.trellzo.dto.requests.UserRequestDTO;
 import com.cliff.trellzo.dto.responses.UserResponseDTO;
 import com.cliff.trellzo.entity.User;
@@ -42,6 +43,10 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequestDTO loginRequestDTO){
+        return userService.verify(loginRequestDTO);
     }
 
 }

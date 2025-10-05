@@ -2,6 +2,7 @@ package com.cliff.trellzo.service;
 
 import com.cliff.trellzo.config.RabbitMqConfig;
 import com.cliff.trellzo.dto.email.EmailQueueDto;
+import com.cliff.trellzo.dto.requests.LoginRequestDTO;
 import com.cliff.trellzo.dto.requests.UserRequestDTO;
 import com.cliff.trellzo.dto.responses.TaskResponseDTO;
 import com.cliff.trellzo.dto.responses.UserResponseDTO;
@@ -11,6 +12,10 @@ import com.cliff.trellzo.utils.EmailUtils;
 import com.cliff.trellzo.utils.TaskUtils;
 import com.cliff.trellzo.utils.UserUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,11 +27,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final RabbitTemplate rabbitTemplate;
     private final UserUtils userUtils;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, RabbitTemplate rabbitTemplate, UserUtils userUtils) {
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    public UserService(UserRepository userRepository, RabbitTemplate rabbitTemplate, UserUtils userUtils, JwtService jwtService) {
         this.userRepository = userRepository;
         this.rabbitTemplate = rabbitTemplate;
         this.userUtils = userUtils;
+        this.jwtService = jwtService;
     }
 
     public List<UserResponseDTO> findAllUsers() {
@@ -95,5 +105,16 @@ public class UserService {
         saved.getTasks().forEach(task -> tasks.add(TaskUtils.createTaskResponseDTO(task)));
         userResponseDTO.setTasks(tasks);
         return userResponseDTO;
+    }
+
+    public String verify(LoginRequestDTO loginRequestDTO) {
+
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword()));
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(loginRequestDTO.getUsername());
+        }
+        return "fail";
+
     }
 }
